@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 	"sync"
-
 	imap "github.com/emersion/go-imap"
 	client "github.com/emersion/go-imap/client"
 	"github.com/emersion/go-message/mail"
@@ -14,9 +13,7 @@ import (
 
 type User struct {
 	Ids []uint32
-	// ReceiptsArray []Receipts
 	ClientSession *client.Client
-	// ByteData []byte
 }
 
 func NewUser() *User {
@@ -25,18 +22,17 @@ func NewUser() *User {
 }
 
 func (user *User) Login(username string, password string) {
-	//watch := stopwatch.Start()
 	log.Println("Connecting to server...")
 
 	// Connect to server
-	var err error
+
+	var err error		       	 // outlook.office365.com  <--- CHANGE IF USING OUTLOOK
 	user.ClientSession, err = client.DialTLS("imap.gmail.com:993", nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Println("Connected")
 
-	// Don't forget to logout
 	//defer user.clientSession.Logout()
 
 	// Login
@@ -47,6 +43,7 @@ func (user *User) Login(username string, password string) {
 	}
 	log.Println("Logged in")
 
+	//Selecting the email location
 	_, err = user.ClientSession.Select("INBOX", false)
 	if err != nil {
 		log.Fatal(err)
@@ -120,7 +117,7 @@ func EmailChecker(messages <-chan *imap.Message, wg *sync.WaitGroup) string {
 			switch h := p.Header.(type) {
 			case *mail.InlineHeader:
 				b, _ := ioutil.ReadAll(p.Body)
-				log.Printf("Got text: %v\n", string(b))
+				//log.Printf("Got text: %v\n", string(b))
 				strings := string(b)
 				mess = strings
 			case *mail.AttachmentHeader:
